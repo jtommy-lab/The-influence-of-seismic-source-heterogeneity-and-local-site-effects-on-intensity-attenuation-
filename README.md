@@ -32,6 +32,7 @@ daños_2010_dataset_lock.csv
         Content: Contains MSK-64 intensities for the 2010 Maule event with distance metrics derived exclusively from the Moreno et al. (2010) interseismic locking model, rather than coseismic slip distributions.
 
 2. Code
+   
    2.1 Regression
 
    2.1.1 functions_MSK64.r

@@ -192,4 +192,52 @@ daños_2010_dataset_lock.csv
               Formatting: Includes shared axes, specific annotations for "Distance [km]" and "MSK-64 Intensity", and a legend in the first panel.
    
             Output: Fig2.pdf
+
+   2.2.3 plot_predictions.py
+
+         Description: This script generates the comprehensive attenuation plots and spatial analysis maps for the manuscript (Figures 4, 5, 6, and 7). It visualizes the predictive performance of the calibrated models against observed data for instrumental and historical earthquakes, and performs specific spatial analyses for the 2010 Maule earthquake regarding interseismic locking and high-frequency (HF) radiation.
+
+         Workflow:
+      
+          Calibration & Validation Attenuation Curves (Figures 4 & 5):
+      
+              Process: Iterates through all calibration (e.g., 2010, 2015) and validation (e.g., 1835, 1906) events.
+      
+              Plotting: Generates 4-panel figures comparing observations vs. predictions for metrics Rhyp​, Raspmax​, Rasp​, and Rasppond​.
+      
+              Features:
+      
+                  Mean prediction curves (solid black) and ±σ confidence intervals (gray polygons).
+      
+                  Statistical annotation: RMSE for calibration events; ubRMSE and Bias for validation events.
+      
+              Outputs: pred_[YEAR] (e.g., pred_2010 for Fig4.pdf and pred_1835 for Fig5.pdf).
+      
+          Interseismic Locking Analysis - Maule 2010 (Figure 6):
+      
+              Left Panel: Comparison of attenuation models (Raspmax​, Rasp​, Rasppond​) derived a priori from the Moreno et al. (2010) locking model.
+      
+              Right Panel (Map): A map of Central Chile visualizing:
+      
+                  Interseismic locking degree (Heatmap).
+      
+                  Comparison between Preseismic locking peaks (Green triangles) and Coseismic slip peaks (Blue triangles).
+      
+                  Megathrust segmentation (M1, M2, M3) according to segmentation model of Molina et al. (2021).
+      
+              Output: 2010_lock_pred, Fig6.pdf.
+      
+          High-Frequency (HF) Radiation Analysis - Maule 2010 (Figure 7):
+      
+              Left Panel: Comparison of the best slip-based metric (Raspmax​) against HF-based metrics (Rhf​, Rhfpond​) using the Palo et al. (2014) model (0.4–3 Hz band). Includes AIC and σ statistics.
+      
+              Right Panel (Map): A map visualizing the spatial distribution of source parameters (i.e. Slip peak, HF radiators and Hypocenter):
+      
+                  Normalized HF energy radiators (Red/Yellow circles).
+      
+                  Coseismic slip contours (Black lines) and peaks (Blue triangles).
+      
+                  Distribution of MSK-64 intensities (Green triangles).
+      
+              Output: 2010_hf_palo_0.4_3Hz_pred, Fig7.pdf.
          

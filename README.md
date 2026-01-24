@@ -32,3 +32,70 @@ daños_2010_dataset_lock.csv
         Content: Contains MSK-64 intensities for the 2010 Maule event with distance metrics derived exclusively from the Moreno et al. (2010) interseismic locking model, rather than coseismic slip distributions.
 
 2. Code
+   2.1 Regression
+
+   2.1.1 functions_MSK64.r
+
+       Description: This script contains the R functions defining the governing equations for the Intensity Prediction Models tested in this study.
+
+       Content: Each function returns the predicted intensity value along with a .grad attribute. This attribute contains the matrix of partial derivatives (gradient) with respect to the regression coefficients (c1​,c2​,…).
+
+       This structure is specifically designed for the nlme (Non-Linear Mixed-Effects) R package, allowing the Gauss-Newton algorithm to converge faster and more accurately by avoiding finite-difference approximations of the derivative.
+
+       Included Models:
+   
+                Musson & Allen: Base form and variations without Magnitude (M) or with site effects (f0​).
+            
+                Bakun & Wentworth: Including variations for calibration (with M) and validation (without M).
+            
+                Atkinson: A more complex functional form including a magnitude-distance interaction term (M⋅logR).
+   
+   2.1.2 nls_attenuation_instrumental.r
+
+       Description: This script performs the statistical calibration, validation, and specific sensitivity analysis of the Intensity Prediction Equations (IPEs). It utilizes Non-Linear Mixed-Effects (NLME) regression to account for inter-event and intra-event variability.
+
+ 
+       Workflow:
+
+              Data Preprocessing:
+
+                    Loads the master dataset (daños_historicos_final_dataset.csv).
+            
+                    Splits the data into a Calibration Set (Instrumental period: Year ≥ 1985) and a Validation Set (Historical period: Year < 1985).
+
+              Model Calibration (Instrumental Events):
+
+                    Fits IPEs using the nlmer function from the lme4/nlme packages.
+            
+                    Tests multiple distance metrics: Rhyp​, Rasp​, Raspmax​, and Rasppond​.
+            
+                    Estimates fixed effects (coefficients c1​,c2​) and random effects (Event term).
+            
+                    Calculates goodness-of-fit statistics: AIC, τ (inter-event variability), ϕ (intra-event variability), and σ (total variability).
+
+                    Output: coeff_metrics_MSK.csv (Model coefficients) and inter_event_residual_MSK.csv (δBe​).
+
+             Model Validation (Historical Events):
+
+                    Applies the fixed effects derived from the calibration step to the historical validation dataset.
+            
+                    Computes predicted intensities and residuals for events like 1730, 1835, and 1906.
+            
+                    Output: residuals_df_validation.csv.
+
+             2010 Maule Earthquake & High-Frequency (HF) Analysis:
+
+                    Loads specific datasets for the 2010 Maule event containing HF radiation metrics derived from Vera et al. (2024) and Palo et al. (2014) models across different frequency bands (0.5-2Hz, 1-4Hz, 2-8Hz, 0.4-3Hz).
+            
+                    Compares the performance of slip-based metrics vs. HF-based metrics (Rhf​, Rhfmax​) using linear regression (lm).
+
+             Site Response Correction (f0​ Analysis):
+
+                    Analyzes residuals from the 2010 event against the soil fundamental frequency (f0​).
+            
+                    Identifies systematic bias in specific frequency ranges.
+            
+                    Implements a correction term in the regression model for soft soils (f0​<1 Hz) and high-frequency sites (f0​≥5 Hz) using logarithmic dummy variables.
+            
+                    Output: coeff_metrics_2010_Palo_0.4_3Hz_f0.csv (Coefficients with site correction) and diagnostic plots.
+         

@@ -240,4 +240,31 @@ daños_2010_dataset_lock.csv
                   Distribution of MSK-64 intensities (Green triangles).
       
               Output: 2010_hf_palo_0.4_3Hz_pred, Fig7.pdf.
+
+   2.2.4 plot_rupture_lengths.py
+
+         Description: This script generates Figure 1 of the manuscript, providing a comprehensive map of the study area in Central Chile. It visualizes the spatial distribution of the MSK-64 intensity dataset, the rupture extents of historical (validation dataset) and instrumental (calibration dataset) megathrust earthquakes (Mw​>8.0), and the tectonic segmentation of the Central Chile subduction zone according to Molina et. al. (2021).
+
+         Workflow:
+      
+              Basemap: Defines a Mercator projection (M8c) covering the region [-81°, -69°] Longitude and [-43°, -27°] Latitude.
+      
+              Rupture Zones:
+      
+                  Manually plots the approximate rupture lengths of 12 major earthquakes spanning from 1730 to 2015 using colored lines.
+      
+                  Color Coding:
+      
+                      Red: Calibration events (Instrumental: 2015, 2010, 1985).
+      
+                      Blue: Validation events (Historical: 1730, 1751, 1835, 1906).
+      
+                      Black: Other significant historical events (e.g., 1822, 1880, 1928, 1943, 1971).
+      
+                  Labels are dynamically positioned based on event year to avoid overlap.
+      
+              Segmentation: Overlays the megathrust segmentation model (VP1-VP3, M1-M3) defined by Molina et al. (2021) using vector lines and text annotations.
+
+   
+            Output: Fig1.pdf
          

@@ -99,4 +99,59 @@ daños_2010_dataset_lock.csv
                        Implements a correction term in the regression model for soft soils (f0​<1 Hz) and high-frequency sites (f0​≥5 Hz) using logarithmic dummy variables.
                
                        Output: coeff_metrics_2010_Palo_0.4_3Hz_f0.csv (Coefficients with site correction) and diagnostic plots.
+
+   2.2 Plots
+
+      2.2.1 plot_residuales_MSK.py
+
+         Description: This script generates the residual analysis figures presented in the manuscript (Figures 3, 8, and S2) using PyGMT. It processes the output files from the regression analysis to visualize model performance, distance dependency, and site response bias.
+
+
+         Workflow:
+
+             Figure 3: Intra-event Residuals vs. Distance
+         
+                  Input: residuals_df_instrumental.csv
+                  
+                  Processing:
+                  
+                     Calculates statistical bins for residuals across logarithmic distance intervals (N=6 bins).
+                  
+                     Computes the mean and standard error (σ/N​) for each bin to visualize trends.
+                  
+                  Plotting: Generates a 4-panel figure comparing the distance metrics:
+                  
+                     (a) Rhyp​ vs (b) Raspmax​ vs (c) Rasp​ vs (d) Rasppond​.
+                  
+                     Visuals: Individual observations (red dots), binned means with error bars (blue triangles), and a zero-residual reference line.
+                  
+                  Output: Fig3.pdf
+         
+             Figure 8: Site Response Bias (f0​) for Raspmax​
+
+                 Input: residuals_df_2010_Palo_0.4_3Hz.csv (2010 Maule event subset).
+         
+                 Processing:
+         
+                     Isolates the residuals of the best-performing metric (Raspmax​).
+         
+                     Plots the systematic bias functions derived from the regression for soft soils (f0​<1 Hz) and stiff sites (f0​>5 Hz).
+         
+                 Visuals: Log-scale x-axis (Frequency) vs. Residuals.
+         
+                 Output: Fig8.pdf
+
+             Figure S2: Site Response Bias for High-Frequency Metrics
+
+                 Input: coeff_metrics_2010_Palo_0.4_3Hz_f0.csv and residuals.
+         
+                 Processing:
+         
+                     Iterates through the High-Frequency (HF) metrics: Rhfmax​, Rhf​, and Rhfpond​.
+         
+                     Uses the regression coefficients (c3​,c4​) to plot the specific bias trend lines for each metric.
+         
+                 Plotting: Generates a 3-panel vertical figure (Supplementary Material).
+         
+                 Output: FigS2.pdf
          

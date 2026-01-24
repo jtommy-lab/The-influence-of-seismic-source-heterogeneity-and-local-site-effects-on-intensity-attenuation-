@@ -154,4 +154,42 @@ daños_2010_dataset_lock.csv
                  Plotting: Generates a 3-panel vertical figure (Supplementary Material).
          
                  Output: FigS2.pdf
+   
+   2.2.2 plot_observations.py
+
+         Description: This script generates Figure 2 of the manuscript, illustrating the distribution of MSK-64 intensity observations as a function of distance. It visually compares the attenuation trends between the Calibration Dataset (Instrumental events) and the Validation Dataset (Historical events) across four different distance metrics.
+
+         Workflow:
+   
+           Loads the master dataset (daños_historicos_final_dataset.csv).
+      
+           Splitting: Separates data into:
+   
+               Calibration Set: Events with Year >= 1985 (1985, 2010, 2015).
+   
+               Validation Set: Events with Year < 1985 (1730, 1751, 1835, 1906).
+
+          Visualization (PyGMT):
+   
+              Creates a 2x2 multi-panel figure with a logarithmic X-axis (Distance) and linear Y-axis (Intensity).
+      
+              Panels:
+      
+                  (a) Hypocentral Distance (Rhyp​)
+      
+                  (b) Distance to Nearest Asperity (Rasp​)
+      
+                  (c) Distance to Max Slip Asperity (Raspmax​)
+      
+                  (d) Weighted Asperity Distance (Rasppond​)
+      
+              Symbology:
+      
+                  Red Circles: Calibration data (Instrumental).
+      
+                  Blue Triangles: Validation data (Historical).
+      
+              Formatting: Includes shared axes, specific annotations for "Distance [km]" and "MSK-64 Intensity", and a legend in the first panel.
+   
+            Output: Fig2.pdf
          

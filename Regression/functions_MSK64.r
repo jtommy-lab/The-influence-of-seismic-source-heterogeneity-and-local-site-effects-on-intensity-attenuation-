@@ -102,21 +102,3 @@ Atkinson = function(c1,c2,c3,c4,c5,M,R){
     .value  
 }
 
-nehrp_class <- function(vs30) {
-  ifelse(
-    is.na(vs30), NA,
-    ifelse(
-      vs30 >= 1500, "A",
-      ifelse(
-        vs30 >= 760, "B",
-        ifelse(
-          vs30 >= 360, "C",
-          ifelse(
-            vs30 >= 180, "D",
-            "E"
-          )
-        )
-      )
-    )
-  )
-}

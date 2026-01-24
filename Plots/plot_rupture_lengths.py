@@ -15,9 +15,6 @@ daños = daños.loc[daños['Rhyp [km]'] < 600]
 lat_sites = daños['Latitude'].values
 lon_sites = daños['Longitude'].values
 
-#gmt grdgradient '/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.nc' -G'/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.int' -A225 -Nt
-
-# 1 año son 0.018° aproximadamente
 
 fig1 = pygmt.Figure()
 region = [-81,-69,-43,-27]
@@ -56,14 +53,9 @@ fig1.text(x = -75 -0.018*(2010-1906)-0.31,y = -33.4,text="1906",  font="8p,Helve
 fig1.plot(x=[-75 -0.018*(2010-1822), -75 -0.018*(2010-1822)], y=[-32.5, -34.3], pen='2p,black',projection = projection)
 fig1.text(x = -75 -0.018*(2010-1822)-0.31,y = -33.4,text="1822",  font="8p,Helvetica,black", projection=projection,fill="white",pen = "0.25p,black,solid",angle=90)
 fig1.plot(x=trench_chile['Longitude'], y=trench_chile['Latitude'], style="f0.5i/0.05i+r+t",fill='black', pen="1p,black",projection = projection)
-#fig1.plot(x=obs_2010['StaLon [°]'], y=obs_2010['StaLat [°]'], style="c0.15c",fill='red', pen="0.5p,black",projection = projection,label="2010 Records")
-#fig1.plot(x=daños_2010['Longitude'], y=daños_2010['Latitude'], style="s0.15c",fill='blue', pen="0.5p,black",projection = projection,label="2010 Damages")
-#fig1.plot(x=daños_1835['Longitude'], y=daños_1835['Latitude'], style="s0.15c",fill='green', pen="0.5p,black",projection = projection,label="1835 Damages")
-#fig1.plot(x=daños_1751['Longitude'], y=daños_1751['Latitude'], style="s0.15c",fill='brown', pen="0.5p,black",projection = projection,label="1751 Damages")
 fig1.plot(x=[-72.4, -70.34], y=[-29.8, -29.98], pen='2p,black',projection = projection) #VP1 Norte
 fig1.plot(x=[-70.55, -70.34], y=[-31.98, -29.95], pen='2p,black',projection = projection) #VP1 Cierre
 fig1.text(x = -71.5,y = -30.7,text="VP1",  font="8p,Helvetica,black", projection=projection,fill="white",pen = "0.25p,black,solid",angle=-5)
-#fig1.plot(x=[-70.89,  -70.55], y=[-33.42, -31.98], pen='2p,black') #VP1 Cierre
 fig1.plot(x=[-72.62, -70.55], y=[-31.4, -31.6], pen='2p,black',projection = projection) #VP2 Norte
 fig1.plot(x=[-70.89,  -70.55], y=[-33.42, -31.98], pen='2p,black',projection = projection) #VP2 Cierre
 fig1.text(x = -71.6,y = -32.3,text="VP2",  font="8p,Helvetica,black", projection=projection,fill="white",pen = "0.25p,black,solid",angle=-10)
@@ -84,22 +76,3 @@ fig1.plot(x=[-72.57, -74.5], y=[-37.77, -37.6], pen='2p,black',projection = proj
 fig1.show()
 
 fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/Fig1.pdf',dpi = 300)
-# fig1.shift_origin(xshift="w+2.5c",yshift="0.8c")
-# with fig1.subplot(nrows = 3, ncols = 1, figsize=("4c","12c"),sharex=True):
-#     with fig1.set_panel(panel = [0,0]):
-#         fig1.basemap(region=[10,700,4,10], projection=projection_log, frame=['WSne','xfg3','ya2fg3'])
-#         fig1.plot(x=daños['Rhyp [km]'], y=daños['Intensity'], style='c0.1c', fill='green', pen='0.1p,black')
-#         fig1.text(text="c) R@-hyp@-", position='TL', font="8p,Helvetica,black", projection=projection_log,fill="white",pen = "0.25p,black,solid",offset='0.1/-0.1')
-#     with fig1.set_panel(panel = [1,0]):
-#         fig1.basemap(region=[10,700,4,10], projection=projection_log, frame=['WSne','xfg3','ya2fg3+lMSK64 Intensity'])
-#         fig1.plot(x=daños['Rasp max [km]'], y=daños['Intensity'], style='c0.1c', fill='green', pen='0.1p,black')
-#         fig1.text(text="c) R@-asp@-@+max@+", position='TL', font="8p,Helvetica,black", projection=projection_log,fill="white",pen = "0.25p,black,solid",offset='0.1/-0.1')
-#     with fig1.set_panel(panel = [2,0]):
-#         fig1.basemap(region=[10,700,4,10], projection=projection_log, frame=['WSne','xa2fg3+l Distance (km)','ya2fg3'])
-#         fig1.plot(x=daños['Rasp [km]'], y=daños['Intensity'], style='c0.1c', fill='green', pen='0.1p,black')
-#         fig1.text(text="c) R@-asp@-", position='TL', font="8p,Helvetica,black", projection=projection_log,fill="white",pen = "0.25p,black,solid",offset='0.1/-0.1')
-
-# fig1.show()
-
-# fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/Mapa_daños_y_registros_2010_1835_1751.pdf')
-# fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/Mapa_daños_y_registros_2010_1835_1751.png',transparent=True,dpi=300)

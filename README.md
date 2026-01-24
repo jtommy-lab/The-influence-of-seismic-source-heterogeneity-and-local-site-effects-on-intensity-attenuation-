@@ -267,4 +267,21 @@ daños_2010_dataset_lock.csv
 
    
             Output: Fig1.pdf
+
+   2.2.5 plot_KDE_2010.py
+
+         Description: This script generates Figure S1, which illustrates the methodology used to define the "Characteristic Asperity" model for the 2010 Maule earthquake (Mw​ 8.8). It visualizes the spatial convergence of multiple finite-fault models using a Kernel Density Estimation (KDE) approach to identify the most probable location of high-slip zones.
+
+         Workflow:
+      
+          Inputs:    
+                  KDE Grid: Loads the pre-calculated density grid (kde_2010.grd) derived from the centroids of available coseismic slip models.
+      
+                  All peaks : Centroids from individual slip models (peaks_2010.csv).
+      
+                  Characteristic peaks: Centroids of the characteristic asperity derived from KDE maxima (peaks_2010_kde.csv).
+   
+         Output: FigS1.pdf
+
+   
          

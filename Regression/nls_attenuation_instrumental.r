@@ -8,12 +8,23 @@ library(minpack.lm)
 library(caret)
 library(tidyr)
 library(patchwork)
+library(here)
 
 
-path_functions = '/home/jtommy/Escritorio/Respaldo/functions/functions_MSK64.r'
+path_functions = here("Regression", "functions_MSK64.r")
 source(path_functions)
 
-data_MSK64 = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_historicos_final_dataset.csv',check.names = FALSE)
+
+output_dir = here("Regression", "Stats_results")
+
+
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
+}
+
+
+data_MSK64 = read.csv(here("Data", "daños_historicos_final_dataset.csv"), check.names = FALSE)
+
 data_MSK64 = subset(data_MSK64, data_MSK64$Period == 0)
 data_MSK64_instrumental = subset(data_MSK64,data_MSK64$Year >= 1985)
 data_MSK64_validation = subset(data_MSK64,data_MSK64$Year < 1985)
@@ -97,20 +108,20 @@ coeff_df = data.frame(Rhyp = c(fixef_Rhyp[['c1']],fixef_Rhyp[['c2']],se_Rhyp[['c
 
 rownames(coeff_df) = c('c1','c2','se_c1','se_c2','sigma')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_MSK.csv')
+write.csv(coeff_df, file.path(output_dir, "coeff_metrics_MSK.csv"))
 
 regression_df_T$residuals_Rhyp = residuals(fit_Rhyp)
 regression_df_T$residuals_Rasp = residuals(fit_Rasp)
 regression_df_T$residuals_Rasp_max = residuals(fit_Rasp_max)
 regression_df_T$residuals_Rasp_pond = residuals(fit_Rasp_pond)
 
-write.csv(regression_df_T,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_instrumental.csv')
+write.csv(regression_df_T,file.path(output_dir,"residuals_df_instrumental.csv"))
 
 dBe_df = data.frame(Rhyp = ranef_Rhyp$EVENT$c1,Rasp_max = ranef_Rasp_max$EVENT$c1,Rasp = ranef_Rasp$EVENT$c1,Rasp_pond = ranef_Rasp_pond$EVENT$c1)
 rownames(dBe_df) = rownames(ranef_Rasp_pond$EVENT)
 
 
-write.csv(dBe_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/inter_event_residual_MSK.csv')
+write.csv(dBe_df,file.path(output_dir,"inter_event_residual_MSK.csv"))
 
 predict(fit_Rhyp)
 
@@ -142,16 +153,16 @@ pred_Rasp_pond = as.numeric(Musson_y_Allen_noM(fixef(fit_Rasp_pond)['c1'],fixef(
 regression_df_T$pred_Rasp_pond = pred_Rasp_pond
 
 
-write.csv(regression_df_T,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_validation.csv')
+write.csv(regression_df_T,file.path(output_dir,"residuals_df_validation.csv"))
 
 
 ####### Generamos predicciones con Rhf para 2010 #######
 
 ### Vera 0.5-2Hz ###
 
-data_felipe_Rasp = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe.csv',check.names = FALSE)
+data_felipe_Rasp = read.csv(here("Data","daños_2010_dataset_Felipe.csv"),check.names = FALSE)
 data_felipe_Rasp = subset(data_felipe_Rasp,data_felipe_Rasp$Period == 0)
-data_felipe_Rhf = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_HF_vera.csv',check.names = FALSE)
+data_felipe_Rhf = read.csv(here("Data","daños_2010_dataset_Felipe_HF_vera.csv"),check.names = FALSE)
 
 regression_df_T = data.frame(MSK64 = as.numeric(data_felipe_Rasp$MSK), Rhyp = data_felipe_Rasp$"Rhyp [km]",Rasp = data_felipe_Rasp$"Rasp [km]",
                             Rasp_max = data_felipe_Rasp$"Rasp max [km]",Rasp_pond = data_felipe_Rasp$"Rasp pond slip [km]",Rhf = data_felipe_Rhf$Rhf,
@@ -194,14 +205,14 @@ coeff_df = data.frame(Rasp_max = c(coef(fit_Rasp_max)[["(Intercept)"]],coef(fit_
 
 rownames(coeff_df) = c('c1','c2','se_c1','se_c2','sigma','AIC')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_vera.csv')
+write.csv(coeff_df,file.path(output_dir,"coeff_metrics_2010_vera.csv"))
 
 
 ### Palo 1-4Hz ###
 
-data_felipe_Rasp = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe.csv',check.names = FALSE)
+data_felipe_Rasp = read.csv(here("Data","daños_2010_dataset_Felipe.csv"),check.names = FALSE)
 data_felipe_Rasp = subset(data_felipe_Rasp,data_felipe_Rasp$Period == 0)
-data_felipe_Rhf = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_HF_Palo_1_4_Hz.csv',check.names = FALSE)
+data_felipe_Rhf = read.csv(here("Data","daños_2010_dataset_Felipe_HF_Palo_1_4_Hz.csv"),check.names = FALSE)
 
 regression_df_T = data.frame(MSK64 = as.numeric(data_felipe_Rasp$MSK), Rhyp = data_felipe_Rasp$"Rhyp [km]",Rasp = data_felipe_Rasp$"Rasp [km]",
                             Rasp_max = data_felipe_Rasp$"Rasp max [km]",Rasp_pond = data_felipe_Rasp$"Rasp pond slip [km]",Rhf = data_felipe_Rhf$Rhf,
@@ -245,14 +256,14 @@ coeff_df = data.frame(Rasp_max = c(coef(fit_Rasp_max)[["(Intercept)"]],coef(fit_
 
 rownames(coeff_df) = c('c1','c2','se_c1','se_c2','sigma','AIC')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_1_4Hz.csv')
+write.csv(coeff_df,file.path(output_dir,"coeff_metrics_2010_Palo_1_4Hz.csv"))
 
 
 ### Palo 2-8Hz ###
 
-data_felipe_Rasp = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe.csv',check.names = FALSE)
+data_felipe_Rasp = read.csv(here("Data","daños_2010_dataset_Felipe.csv"),check.names = FALSE)
 data_felipe_Rasp = subset(data_felipe_Rasp,data_felipe_Rasp$Period == 0)
-data_felipe_Rhf = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_HF_Palo_2_8_Hz.csv',check.names = FALSE)
+data_felipe_Rhf = read.csv(here("Data","daños_2010_dataset_Felipe_HF_Palo_2_8_Hz.csv"),check.names = FALSE)
 
 regression_df_T = data.frame(MSK64 = as.numeric(data_felipe_Rasp$MSK), Rhyp = data_felipe_Rasp$"Rhyp [km]",Rasp = data_felipe_Rasp$"Rasp [km]",
                             Rasp_max = data_felipe_Rasp$"Rasp max [km]",Rasp_pond = data_felipe_Rasp$"Rasp pond slip [km]",Rhf = data_felipe_Rhf$Rhf,
@@ -296,14 +307,14 @@ coeff_df = data.frame(Rasp_max = c(coef(fit_Rasp_max)[["(Intercept)"]],coef(fit_
 
 rownames(coeff_df) = c('c1','c2','se_c1','se_c2','sigma','AIC')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_2_8Hz.csv')
+write.csv(coeff_df,file.path(output_dir,"coeff_metrics_2010_Palo_2_8Hz.csv"))
 
 
 ### Palo 0.4-3Hz ###
 
-data_felipe_Rasp = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe.csv',check.names = FALSE)
+data_felipe_Rasp = read.csv(here("Data","daños_2010_dataset_Felipe.csv"),check.names = FALSE)
 data_felipe_Rasp = subset(data_felipe_Rasp,data_felipe_Rasp$Period == 0)
-data_felipe_Rhf = read.csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_HF_Palo_0.4_3_Hz.csv',check.names = FALSE)
+data_felipe_Rhf = read.csv(here("Data","daños_2010_dataset_Felipe_HF_Palo_0.4_3_Hz.csv"),check.names = FALSE)
 
 regression_df_T = data.frame(MSK64 = as.numeric(data_felipe_Rasp$MSK), Rhyp = data_felipe_Rasp$"Rhyp [km]",Rasp = data_felipe_Rasp$"Rasp [km]",
                             Rasp_max = data_felipe_Rasp$"Rasp max [km]",Rasp_pond = data_felipe_Rasp$"Rasp pond slip [km]",Rhf = data_felipe_Rhf$Rhf,
@@ -346,7 +357,7 @@ coeff_df = data.frame(Rasp_max = c(coef(fit_Rasp_max)[["(Intercept)"]],coef(fit_
 
 rownames(coeff_df) = c('c1','c2','se_c1','se_c2','sigma','AIC')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_0.4_3Hz.csv')
+write.csv(coeff_df,file.path(output_dir,"coeff_metrics_2010_Palo_0.4_3Hz.csv"))
 
 
 regression_df_T$residuals_Rasp_max = residuals(fit_Rasp_max)
@@ -433,7 +444,7 @@ coeff_df = data.frame(Rasp_max = c(coef(fit_Rasp_max_f0)[["(Intercept)"]],coef(f
 
 rownames(coeff_df) = c('c1','c2','c3','c4','se_c1','se_c2','se_c3','se_c4','sigma','AIC')
 
-write.csv(coeff_df,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_0.4_3Hz_f0.csv')
+write.csv(coeff_df,file.path(output_dir,"coeff_metrics_2010_Palo_0.4_3Hz_f0.csv"))
 
 
 regression_df_T$residuals_Rasp_max_f0 = residuals(fit_Rasp_max_f0)
@@ -441,7 +452,7 @@ regression_df_T$residuals_Rhf_max_f0 = residuals(fit_Rhf_max_f0)
 regression_df_T$residuals_Rhf_f0 = residuals(fit_Rhf_f0)
 regression_df_T$residuals_Rhf_pond_f0 = residuals(fit_Rhf_pond_f0)
 
-write.csv(regression_df_T,'/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_2010_Palo_0.4_3Hz.csv')
+write.csv(regression_df_T,file.path(output_dir,"residuals_df_2010_Palo_0.4_3Hz.csv"))
 
 p1 = ggplot()+
 geom_point(data = regression_df_T,aes(x = f0, y = residuals_Rasp_max_f0))+

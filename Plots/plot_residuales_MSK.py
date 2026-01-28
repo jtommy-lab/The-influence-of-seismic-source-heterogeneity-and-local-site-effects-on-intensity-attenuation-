@@ -1,14 +1,37 @@
 import pandas as pd
 import pygmt
 import numpy as np
+import os
 
-### Define paths and read residuals data ###
+# =============================================================================
+# 1. PATHS
+# =============================================================================
 
-residual_path = '/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_instrumental.csv'
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+
+RESULTS_DIR = os.path.join(PROJECT_ROOT, 'Regression', 'Stats_results')
+
+
+FIG_DIR = os.path.join(PROJECT_ROOT, 'Figuras_paper')
+os.makedirs(FIG_DIR, exist_ok=True) # Crea la carpeta si no existe
+
+# =============================================================================
+# 2. LOAD DATA
+# =============================================================================
+
+
+residual_path = os.path.join(RESULTS_DIR, 'residuals_df_instrumental.csv')
+
 
 residuals_MSK = pd.read_csv(residual_path)
 
 nbins = 6
+
 
 Rhyp_MSK_bins = residuals_MSK.copy()
 Rhyp_min = Rhyp_MSK_bins['Rhyp'].min()
@@ -22,6 +45,7 @@ bin_average_Rhyp = pd.DataFrame({'x':Rhyp_MSK_bins.groupby(['bin_mid'])['residua
                                          'xerr':0,
                                          'yerr':Rhyp_MSK_bins.groupby(['bin_mid'])['residuals_Rhyp'].std().values/np.sqrt(n_data_Rhyp)})
 
+
 Rasp_max_MSK_bins = residuals_MSK.copy()
 Rasp_max_min = Rasp_max_MSK_bins['Rasp_max'].min()
 Rasp_max_max = Rasp_max_MSK_bins['Rasp_max'].max()
@@ -33,6 +57,7 @@ bin_average_Rasp_max = pd.DataFrame({'x':Rasp_max_MSK_bins.groupby(['bin_mid'])[
                                          'y':Rasp_max_MSK_bins.groupby(['bin_mid'])['residuals_Rasp_max'].mean().values,
                                          'xerr':0,
                                          'yerr':Rasp_max_MSK_bins.groupby(['bin_mid'])['residuals_Rasp_max'].std().values/np.sqrt(n_data_Rasp_max)})
+
 
 Rasp_MSK_bins = residuals_MSK.copy()
 Rasp_min = Rasp_MSK_bins['Rasp'].min()
@@ -46,6 +71,7 @@ bin_average_Rasp = pd.DataFrame({'x':Rasp_MSK_bins.groupby(['bin_mid'])['residua
                                          'xerr':0,
                                          'yerr':Rasp_MSK_bins.groupby(['bin_mid'])['residuals_Rasp'].std().values/np.sqrt(n_data_Rasp)})
 
+
 Rasp_pond_MSK_bins = residuals_MSK.copy()
 Rasp_pond_min = Rasp_pond_MSK_bins['Rasp_pond'].min()
 Rasp_pond_max = Rasp_pond_MSK_bins['Rasp_pond'].max()
@@ -57,8 +83,6 @@ bin_average_Rasp_pond = pd.DataFrame({'x':Rasp_pond_MSK_bins.groupby(['bin_mid']
                                          'y':Rasp_pond_MSK_bins.groupby(['bin_mid'])['residuals_Rasp_pond'].mean().values,
                                          'xerr':0,
                                          'yerr':Rasp_pond_MSK_bins.groupby(['bin_mid'])['residuals_Rasp_pond'].std().values/np.sqrt(n_data_Rasp_pond)})
-
-
 
 
 zero_line = np.zeros((1000,2))
@@ -95,20 +119,26 @@ with fig1.subplot(nrows = 2, ncols = 2, figsize=("12c","6c"),sharex='b',sharey='
         fig1.plot(x = zero_line[:,0],y = zero_line[:,1], pen='1.2p,black', projection=projection_log)
         fig1.plot(data = bin_average_Rasp_pond,error_bar='+p0.75p,blue',style='t0.25c',fill='blue',pen = "0.25p,black,solid", projection=projection_log)
 
-fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/Fig3.pdf')
+
+save_path_3 = os.path.join(FIG_DIR, 'Fig3.pdf')
+fig1.savefig(save_path_3)
+print(f"Figure 3 saved at: {save_path_3}")
 
 
 
-fig1.show()
+# =============================================================================
+# 3. PROCESSING DATA (FIGURE 8 - f0 RESIDUALS)
+# =============================================================================
 
+# Defining paths
+res_f0_path = os.path.join(RESULTS_DIR, 'residuals_df_2010_Palo_0.4_3Hz.csv')
+coeff_path  = os.path.join(RESULTS_DIR, 'coeff_metrics_2010_Palo_0.4_3Hz_f0.csv')
 
-
-########## Residuales para Palo 0.4-3 Hz vs f0 #############
-
-
-residuals_MSK_f0 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_2010_Palo_0.4_3Hz.csv',index_col = 0)
+# Loading data
+residuals_MSK_f0 = pd.read_csv(res_f0_path, index_col=0)
 residuals_MSK_f0 = residuals_MSK_f0.sort_values(by='f0')
-coeff_MSK = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_0.4_3Hz_f0.csv',index_col = 0)
+coeff_MSK = pd.read_csv(coeff_path, index_col=0)
+
 metrics = ['Rhf_max','Rhf','Rhf_pond']
 metric_label = ["a) R@-hf@-@+max@+","b) R@-hf@-","c) R@-hf@-@+pond@+"]
 
@@ -130,12 +160,17 @@ fig1.plot(x = f0_test_01,y = pred_f0_01, pen='1.2p,blue', projection=projection_
 fig1.plot(x = f0_test_5,y = pred_f0_5, pen='1.2p,blue', projection=projection_log)
 fig1.plot(x = zero_line[:,0],y = zero_line[:,1], pen='1.2p,black', projection=projection_log)
 fig1.legend(position = 'JTL+jTL+o0.1c',box='+gwhite+p1p')
-fig1.show()
-
-fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/Fig8.pdf')
 
 
-## Left metrics ##
+save_path_8 = os.path.join(FIG_DIR, 'Fig8.pdf')
+fig1.savefig(save_path_8)
+print(f"Figure 8 saved at: {save_path_8}")
+
+
+# =============================================================================
+# 4. PROCESSING DATA (FIGURE S2 - METRICS)
+# =============================================================================
+
 
 f0_test_01 = np.logspace(np.log10(0.01),np.log10(0.99),100)
 f0_test_5 = np.logspace(np.log10(4),np.log10(10),100)
@@ -165,5 +200,8 @@ with fig1.subplot(nrows = 3, ncols = 1, figsize=("12c","9c"),sharex='b',sharey='
             fig1.plot(x = f0_test_5,y = pred_f0_5, pen='1.2p,blue', projection=projection_log)
             fig1.plot(x = zero_line[:,0],y = zero_line[:,1], pen='1.2p,black', projection=projection_log)
             cont = cont+1
-            
-fig1.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/FigS2.pdf')
+
+# SAVE FIGURE S2
+save_path_S2 = os.path.join(FIG_DIR, 'FigS2.pdf')
+fig1.savefig(save_path_S2)
+print(f"Figure S2 saved at: {save_path_S2}")

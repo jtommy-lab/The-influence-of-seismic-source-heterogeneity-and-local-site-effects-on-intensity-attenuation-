@@ -2,25 +2,46 @@ import pandas as pd
 import pygmt
 import numpy as np
 import sys
-sys.path.append('/home/jtommy/Escritorio/Respaldo/functions/')  # Añade la ruta al sistema
-import functions_py
+import os
+import functions_py 
+
+# =============================================================================
+# 1. PATHS
+# =============================================================================
 
 
-### Define paths and read residuals data ###
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
-calibration_path = '/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_instrumental.csv'
-validation_path = '/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/residuals_df_validation.csv'
+DATA_DIR = os.path.join(PROJECT_ROOT, 'Data')
+RESULTS_DIR = os.path.join(PROJECT_ROOT, 'Regression', 'Stats_results')
+FIG_DIR = os.path.join(PROJECT_ROOT, 'Figuras_paper')
+
+
+os.makedirs(FIG_DIR, exist_ok=True)
+
+
+calibration_path = os.path.join(RESULTS_DIR, 'residuals_df_instrumental.csv')
+validation_path = os.path.join(RESULTS_DIR, 'residuals_df_validation.csv')
+coeff_path = os.path.join(RESULTS_DIR, 'coeff_metrics_MSK.csv')
+dBe_path = os.path.join(RESULTS_DIR, 'inter_event_residual_MSK.csv')
+
+cpt_path = os.path.join(DATA_DIR, 'grayscale02.cpt')
+topo_grid = os.path.join(DATA_DIR, 'chile_central.nc')
+topo_int = os.path.join(DATA_DIR, 'chile_central.int')
+trench_path = os.path.join(DATA_DIR, 'trench-chile')
 
 residuals_MSK = pd.read_csv(calibration_path)
 residuals_MSK_validation = pd.read_csv(validation_path)
-coeff_MSK = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_MSK.csv',index_col = 0)
-dBe_MSK = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/inter_event_residual_MSK.csv',index_col= 0)
+coeff_MSK = pd.read_csv(coeff_path,index_col = 0)
+dBe_MSK = pd.read_csv(dBe_path,index_col= 0)
 metrics = ['Rhyp','Rasp_max','Rasp','Rasp_pond']
 metric_label = ["a) R@-hyp@-","b) R@-asp@-@+max@+","c) R@-asp@-","d) R@-asp@-@+pond@+"]
 projection_log = "X?l/?"
 
-### For calibration events: 2015, 2010 and 1985 ###
-### 2010 Figure 4
+# =============================================================================
+# 3. PLOT CALIBRATION EVENTS (2015, 2010, 1985)
+# =============================================================================
 
 for year in pd.unique(residuals_MSK['EVENT']):
     data_MSK = residuals_MSK.loc[residuals_MSK['EVENT'] == year]
@@ -84,14 +105,16 @@ for year in pd.unique(residuals_MSK['EVENT']):
                 if cont == 2:
                     fig.text(text="Distance (km)", position='BR', font="10p,Helvetica,black",no_clip = True,angle = 0,offset='1.2/-1', projection=projection_log) 
                     fig.text(text="MSK-64 Intensity", position='TL', font="10p,Helvetica,black", no_clip = True,angle = 90,offset='-1.2/-1', projection=projection_log)          
-            cont = cont + 1
-    fig.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/pred_'+str(year)+'.pdf',dpi = 300)
+            cont = cont + 1    
+    save_path = os.path.join(FIG_DIR, 'pred_'+str(year)+'.pdf')
+    fig.savefig(save_path, dpi=300)
+    print(f"Saved: {save_path}")
 
 
-### For validation events: 1730, 1751, 1835, 1906 ###
+# =============================================================================
+# 4. PLOT VALIDATION EVENTS (1730, 1751, 1835, 1906)
+# =============================================================================
 
-### 1835 Figure 5
-    
 for year in pd.unique(residuals_MSK_validation['EVENT']):
     data_MSK = residuals_MSK_validation.loc[residuals_MSK_validation['EVENT'] == year]
     min_metrics = min(data_MSK['Rhyp'].min(),data_MSK['Rasp_max'].min(),data_MSK['Rasp'].min(),data_MSK['Rasp_pond'].min())
@@ -158,20 +181,33 @@ for year in pd.unique(residuals_MSK_validation['EVENT']):
                     fig.text(text="Distance (km)", position='BR', font="10p,Helvetica,black",no_clip = True,angle = 0,offset='1.2/-1', projection=projection_log) 
                     fig.text(text="MSK-64 Intensity", position='TL', font="10p,Helvetica,black", no_clip = True,angle = 90,offset='-1.2/-1', projection=projection_log)          
             cont = cont + 1
-    fig.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/pred_'+str(year)+'.pdf',dpi = 300)
+    
+    save_path = os.path.join(FIG_DIR, 'pred_'+str(year)+'.pdf')
+    fig.savefig(save_path, dpi=300)
+    print(f"Saved: {save_path}")
     
     
     
-#### For 2010 using lock ###
-#### 2010 using locking model Figure 6
+# =============================================================================
+# 5. 2010 LOCKING MODEL (Figure 6)
+# =============================================================================
 
-intensity_MSK_2010 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_lock.csv',index_col=0)
-trench_chile = pd.read_csv('/home/jtommy/Escritorio/Respaldo/base_de_datos/Trench/trench-chile',delim_whitespace=True,index_col = None,names=['Longitude','Latitude','Depth'])
-peak_2010 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/asperities_peaks/peaks_lock_2010.csv',index_col = 0)
+# Definir paths específicos (Asumiendo que están en Data)
+int_lock_path = os.path.join(DATA_DIR, 'daños_2010_dataset_Felipe_lock.csv')
+peaks_lock_path = os.path.join(DATA_DIR, 'peaks_lock_2010.csv')
+peaks_kde_path = os.path.join(DATA_DIR, 'peaks_2010_kde.csv')
+locking_grd_path = os.path.join(DATA_DIR, 'Chile_locking.grd')
+
+intensity_MSK_2010 = pd.read_csv(int_lock_path, index_col=0)
+trench_chile = pd.read_csv(trench_path, delim_whitespace=True, index_col=None, names=['Longitude','Latitude','Depth'])
+
+peak_2010 = pd.read_csv(peaks_lock_path, index_col=0)
 peak_2010['weight'] = peak_2010['z']/sum(peak_2010['z'])
+# Usamos functions_py importado desde la carpeta relativa
 peak_2010['Depth (km)'] = functions_py.get_slab_depth(peak_2010['lon'].values,peak_2010['lat'].values)['Depth (km)'].values
 peak_2010['lon'] = peak_2010['lon']-360
-peaks_df_2010_kde = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/asperities_peaks/peaks_2010_kde.csv',index_col = 0)
+
+peaks_df_2010_kde = pd.read_csv(peaks_kde_path, index_col=0)
 peaks_df_2010_kde['lon'] = peaks_df_2010_kde['lon']-360
 year = 2010
 
@@ -247,14 +283,11 @@ projection = 'M5.5c'
 Hypocenter_lat_2010 = -35.98
 Hypocenter_lon_2010 = -73.15
 
-
-
 fig.basemap(region=region, projection=projection, frame=['WSne','xa2f1','ya2f1'])        
-pygmt.makecpt(cmap='/home/jtommy/Escritorio/graficos_GMT/paletas/grayscale02.cpt',series = [-30000,6000,10])
-fig.grdimage(grid ='/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.nc',projection = projection,
-            shading ='/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.int', cmap=True )
+pygmt.makecpt(cmap=cpt_path, series = [-30000,6000,10])
+fig.grdimage(grid=topo_grid, projection=projection, shading=topo_int, cmap=True)
 pygmt.makecpt(cmap='hot',series = [0,1],reverse=True)
-fig.grdimage(grid = '/home/jtommy/Escritorio/Respaldo/base_de_datos/Modelos_locking/Chile_locking.grd',projection = projection, cmap=True,nan_transparent = True ) 
+fig.grdimage(grid=locking_grd_path, projection=projection, cmap=True, nan_transparent=True) 
 fig.plot(x=peak_2010['lon'], y=peak_2010['lat'], fill='green',style='t0.3c',projection = projection,pen="0.1p,black",label = 'Preseismic peaks')
 fig.plot(x=peaks_df_2010_kde['lon'], y=peaks_df_2010_kde['lat'], fill='blue',style='t0.3c',projection = projection,pen="0.1p,black",label = 'Coseismic peaks')
 fig.coast(shorelines=True,projection=projection)
@@ -272,31 +305,39 @@ fig.text(x = -73.5,y = -37.15,text="M3",  font="8p,Helvetica,black", projection=
 fig.plot(x=[-72.57, -74.5], y=[-37.77, -37.6], pen='2p,black',projection = projection) #M3 Sur
 fig.legend(position = 'JTL+jTL+o0.1c',box='+gwhite+p1p')
 fig.colorbar(frame="xaf+lLocking degree",position="g-75/-38.5+w5.5c/0.4c+h",projection=projection,region=[-75, -72,-38,-34])
-fig.show()
+# fig.show()
+
+save_path = os.path.join(FIG_DIR, '2010_lock_pred.pdf')
+fig.savefig(save_path, dpi=300)
+print(f"Saved: {save_path}")
 
 
 
-       
-fig.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/2010_lock_pred.pdf',dpi = 300)
+# =============================================================================
+# 6. 2010 HIGH FREQUENCY MODEL (Figure 7)
+# =============================================================================
 
+# Definir paths HF
+coeff_hf_path = os.path.join(RESULTS_DIR, 'coeff_metrics_2010_Palo_0.4_3Hz.csv')
+int_hf_path = os.path.join(DATA_DIR, 'daños_2010_dataset_Felipe_HF_Palo_0.4_3_Hz.csv')
+int_rasp_path = os.path.join(DATA_DIR, 'daños_2010_dataset_Felipe.csv')
+peak_hf_path = os.path.join(DATA_DIR, 'peaks_hf_palo_2010_0.4_3Hz.csv')
+slip_grid_path = os.path.join(DATA_DIR, 'slip_total_epsl12.grd')
 
+coeff_MSK = pd.read_csv(coeff_hf_path, index_col=0)
 
-##### For 2010 using High Frecuency
-##### 2010 using Palo et. al. (2014) HF model for 0.4 - 3 Hz frequency band Figure 7
-
-
-coeff_MSK = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Stats_results/coeff_metrics_2010_Palo_0.4_3Hz.csv',index_col = 0)
-
-intensity_MSK_2010 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe_HF_Palo_0.4_3_Hz.csv')
-intensity_MSK_Rasp_2010 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/daños_2010_dataset_Felipe.csv')
+intensity_MSK_2010 = pd.read_csv(int_hf_path)
+intensity_MSK_Rasp_2010 = pd.read_csv(int_rasp_path)
 intensity_MSK_Rasp_2010 = intensity_MSK_Rasp_2010.loc[intensity_MSK_Rasp_2010['Period'] == 0]
 intensity_MSK_2010['Rasp_max'] = intensity_MSK_Rasp_2010['Rasp max [km]'].values
-trench_chile = pd.read_csv('/home/jtommy/Escritorio/Respaldo/base_de_datos/Trench/trench-chile',delim_whitespace=True,index_col = None,names=['Longitude','Latitude','Depth'])
-peak_2010 = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/asperities_peaks/peaks_hf_palo_2010_0.4_3Hz.csv',index_col = 0)
+trench_chile = pd.read_csv(trench_path, delim_whitespace=True, index_col=None, names=['Longitude','Latitude','Depth'])
+
+peak_2010 = pd.read_csv(peak_hf_path, index_col=0)
 peak_2010['weight'] = peak_2010['z']/sum(peak_2010['z'])
 peak_2010['Depth (km)'] = functions_py.get_slab_depth(peak_2010['lon'].values,peak_2010['lat'].values)['Depth (km)'].values
 peak_2010['lon'] = peak_2010['lon']-360
-peaks_df_2010_kde = pd.read_csv('/home/jtommy/Escritorio/Respaldo/Paper2_v2/dataset/asperities_peaks/peaks_2010_kde.csv',index_col = 0)
+
+peaks_df_2010_kde = pd.read_csv(peaks_kde_path, index_col=0)
 peaks_df_2010_kde['lon'] = peaks_df_2010_kde['lon']-360
 year = 2010
 
@@ -374,12 +415,9 @@ projection = 'M6c'
 Hypocenter_lat_2010 = -35.98
 Hypocenter_lon_2010 = -73.15
 
-
-
 fig.basemap(region=region, projection=projection, frame=['WSne','xa2f1','ya2f1'])        
-pygmt.makecpt(cmap='/home/jtommy/Escritorio/graficos_GMT/paletas/grayscale02.cpt',series = [-30000,6000,10])
-fig.grdimage(grid ='/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.nc',projection = projection,
-            shading ='/home/jtommy/Escritorio/Respaldo/base_de_datos/Topobatimetrias/chile_central.int', cmap=True )
+pygmt.makecpt(cmap=cpt_path, series = [-30000,6000,10])
+fig.grdimage(grid=topo_grid, projection=projection, shading=topo_int, cmap=True)
 pygmt.makecpt(cmap='hot',series = [0,1],reverse=True)
 #fig.grdimage(grid = '/home/jtommy/Escritorio/Respaldo/base_de_datos/Modelos_locking/Chile_locking.grd',projection = projection, cmap=True,nan_transparent = True ) 
 fig.plot(x=-80, y=-40, fill='red',style='c0.1c', projection = projection,pen="0.15p,black",label = 'HF peaks')
@@ -389,13 +427,12 @@ fig.coast(shorelines=True,projection=projection)
 fig.plot(x=trench_chile['Longitude'], y=trench_chile['Latitude'], style="f0.5i/0.05i+r+t",fill='black', pen="1p,black",projection = projection)
 fig.plot(x=Hypocenter_lon_2010, y=Hypocenter_lat_2010, style='a0.35c', fill='cyan', pen='0.2p,black', projection=projection,label='Hypocenter')
 fig.plot(x = intensity_MSK_Rasp_2010['Longitud'], y = intensity_MSK_Rasp_2010['Latitud'], style='t0.25c', fill='green', pen='0.1p,black',projection = projection,label="MSK64 intensities")
-fig.grdcontour(grid='/home/jtommy/Escritorio/Respaldo/Paper_Ale/graficos/slip_total_epsl12.grd', annotation=4, levels=4) 
+fig.grdcontour(grid=slip_grid_path, annotation=4, levels=4) 
 fig.legend(position = 'JTL+jTL+o0.1c',box='+gwhite+p1p')
 fig.colorbar(frame="xaf+lNormalized energy",position="g-75/-38.5+w5.5c/0.4c+h",projection=projection,region=[-75, -72,-38,-34])
-fig.show()
+# fig.show()
 
-
-
-       
-fig.savefig('/home/jtommy/Escritorio/Respaldo/Paper2_v2/Figuras_paper/2010_hf_palo_0.4_3Hz_pred.pdf',dpi = 300)
+save_path = os.path.join(FIG_DIR, '2010_hf_palo_0.4_3Hz_pred.pdf')
+fig.savefig(save_path, dpi=300)
+print(f"Saved: {save_path}")
         

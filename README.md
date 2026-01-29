@@ -284,7 +284,7 @@ daños_2010_dataset_lock.csv
          Output: FigS1.pdf
 
 
-   License The code in this repository is licensed under the MIT License. The datasets located in the Data/ folder are licensed under a Creative Commons Attribution 4.0 International License (CC-BY 4.0).
+   License: The code in this repository is licensed under the MIT License. The datasets located in the Data/ folder are licensed under a Creative Commons Attribution 4.0 International License (CC-BY 4.0).
 
    
          

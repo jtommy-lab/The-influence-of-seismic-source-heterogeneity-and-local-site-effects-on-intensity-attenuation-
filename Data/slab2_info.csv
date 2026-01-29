@@ -1,0 +1,8 @@
+,Minimum Longitude,Minimum Latitude,Maximum Latitude,Maximum Longitude,Subduction_Zone_Name,Filename
+0,274,-49,15,303,South America,sam_slab2_dep_02.23.18.grd
+1,71,23,38,100,Himalaya,him_slab2_dep_02.24.18.grd
+2,227,35,54,245,Cascadia,cas_slab2_dep_02.24.18.grd
+3,121,34,61,170,Kuril-Japan,kur_slab2_dep_02.24.18.grd
+4,116,19,41,143,Ryuku,ryu_slab2_dep_02.26.18.grd
+5,247,3,27,281,Central America,cam_slab2_dep_02.24.18.grd
+6,161,45,68,226,Alaska,alu_slab2_dep_02.23.18.grd
